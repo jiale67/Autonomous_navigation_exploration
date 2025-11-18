@@ -1,0 +1,45 @@
+# DWA Local Planner 参数配置
+
+# 机器人物理属性
+robot_radius: 0.3              # 机器人半径 (m)
+sensor_offset_x: 0.0           # 传感器 X 偏移 (m)
+sensor_offset_y: 0.0           # 传感器 Y 偏移 (m)
+
+# 运动学约束
+max_speed: 2.0                 # 最大线速度 (m/s)
+min_speed: 0.0                 # 最小线速度 (m/s)
+max_yaw_rate: 90.0             # 最大角速度 (度/秒) - 大幅提高转弯能力
+max_accel: 2.5                 # 最大线加速度 (m/s^2)
+max_yaw_accel: 180.0           # 最大角加速度 (度/秒^2) - 大幅提高以快速转向
+
+# DWA 采样参数
+sim_time: 1.5                  # 前向仿真时间 (秒) - 缩短以更快响应
+sim_dt: 0.1                    # 仿真时间步长 (秒)
+vx_samples: 6                  # 线速度采样数 - 减少以提高实时性
+wz_samples: 20                 # 角速度采样数 - 增加以提高转弯精度
+
+# 传感器参数
+use_terrain_analysis: true     # 是否使用地形分析
+adjacent_range: 4.25           # 点云裁剪范围 (m)
+voxel_size: 0.05               # 体素滤波尺寸 (m)
+obstacle_height_thre: 0.15     # 障碍物高度阈值 (m)
+
+# 全局路径跟随
+path_lookahead_dist: 3.0       # 路径前视距离 (m)
+goal_update_distance: 1.5      # 目标推进距离阈值 (m) - 提前推进到下一个目标
+goal_tolerance: 0.5            # 到达目标的容忍距离 (m) - 增大以避免过度靠近
+
+# 代价函数权重
+heading_cost_weight: 2.0       # 朝向代价权重
+velocity_cost_weight: 5.0      # 速度代价权重 - 大幅提高以强烈鼓励前进
+clearance_cost_weight: 1.0     # 障碍物距离代价权重
+path_distance_cost_weight: 1.0 # 路径距离代价权重 - 降低以避免过度限制速度
+
+# 安全参数
+stop_clearance: 0.35           # 强制停车距离 (m) - 降低以避免过早停车
+safety_margin: 0.08            # 安全裕度 (m) - 稍微降低
+
+# 其他参数
+control_rate: 20.0             # 控制频率 (Hz)
+two_way_drive: true            # 是否支持前后双向驱动
+

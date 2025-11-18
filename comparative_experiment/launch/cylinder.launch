@@ -1,0 +1,154 @@
+<launch>
+  <!-- ============================================ -->
+  <!-- Cylinder 场景 (柱形障碍) 对比实验 Launch 文件 -->
+  <!-- ============================================ -->
+  
+  <!-- 场景配置 -->
+  <arg name="world_name" default="cylinder"/>
+  <arg name="vehicleHeight" default="0.75"/>
+  <arg name="cameraOffsetZ" default="0"/>
+  <arg name="terrainZ" default="0"/>
+  <arg name="gazebo_gui" default="false"/>
+  <arg name="checkTerrainConn" default="false"/>
+  
+  <!-- 机器人初始位姿 (控制变量) -->
+  <arg name="vehicleX" default="10.0"/>
+  <arg name="vehicleY" default="-10.0"/>
+  <arg name="vehicleYaw" default="3.14"/>
+  
+  <!-- 目标点 (控制变量) -->
+  <arg name="goalX" default="-11.0"/>
+  <arg name="goalY" default="11.0"/>
+  
+  <!-- 全局规划器选择: astar 或 rrtstar -->
+  <arg name="global_planner" default="astar"/>
+  
+  <!-- 局部规划器选择: local_planner, dwa, mpc -->
+  <arg name="local_planner" default="local_planner"/>
+  
+  <!-- 通用参数 -->
+  <arg name="sensorOffsetX" default="0"/>
+  <arg name="sensorOffsetY" default="0"/>
+  <arg name="twoWayDrive" default="true"/>
+  <arg name="maxSpeed" default="2.0"/>
+  
+  
+  <!-- ============================================ -->
+  <!-- 车辆仿真器 -->
+  <!-- ============================================ -->
+  <include file="$(find vehicle_simulator)/launch/vehicle_simulator.launch">
+    <arg name="world_name" value="$(arg world_name)"/>
+    <arg name="vehicleHeight" value="$(arg vehicleHeight)"/>
+    <arg name="cameraOffsetZ" value="$(arg cameraOffsetZ)"/>
+    <arg name="vehicleX" value="$(arg vehicleX)"/>
+    <arg name="vehicleY" value="$(arg vehicleY)"/>
+    <arg name="terrainZ" value="$(arg terrainZ)"/>
+    <arg name="vehicleYaw" value="$(arg vehicleYaw)"/>
+    <arg name="gui" value="$(arg gazebo_gui)"/>
+  </include>
+  
+  
+  <!-- ============================================ -->
+  <!-- 地形分析 -->
+  <!-- ============================================ -->
+  <include file="$(find terrain_analysis)/launch/terrain_analysis.launch"/>
+  
+  <include file="$(find terrain_analysis_ext)/launch/terrain_analysis_ext.launch">
+    <arg name="checkTerrainConn" value="$(arg checkTerrainConn)"/>
+  </include>
+  
+  
+  <!-- ============================================ -->
+  <!-- 全局路径规划器 -->
+  <!-- ============================================ -->
+  <!-- A* 全局规划器 -->
+  <include file="$(find global_path_planner)/launch/astar_interactive.launch" if="$(eval global_planner == 'astar')">
+    <arg name="world_name" value="$(arg world_name)"/>
+  </include>
+  
+  <!-- RRT* 全局规划器 -->
+  <include file="$(find global_path_planner)/launch/rrt_star_interactive.launch" if="$(eval global_planner == 'rrtstar')">
+    <arg name="world_name" value="$(arg world_name)"/>
+  </include>
+  
+  
+  <!-- ============================================ -->
+  <!-- 局部路径规划器 -->
+  <!-- ============================================ -->
+  
+  <!-- Local Planner (原始局部规划器) -->
+  <group if="$(eval local_planner == 'local_planner')">
+    <include file="$(find local_planner)/launch/local_planner.launch">
+      <arg name="useGlobalPlan" value="true"/>
+      <arg name="sensorOffsetX" value="$(arg sensorOffsetX)"/>
+      <arg name="sensorOffsetY" value="$(arg sensorOffsetY)"/>
+      <arg name="cameraOffsetZ" value="$(arg cameraOffsetZ)"/>
+      <arg name="twoWayDrive" value="$(arg twoWayDrive)"/>
+      <arg name="maxSpeed" value="$(arg maxSpeed)"/>
+      <arg name="goalX" value="$(arg goalX)"/>
+      <arg name="goalY" value="$(arg goalY)"/>
+    </include>
+  </group>
+  
+  <!-- DWA Local Planner -->
+  <group if="$(eval local_planner == 'dwa')">
+    <node pkg="dwa_local_planner" type="dwa_local_planner_node" name="dwa_local_planner" output="screen" required="true">
+      <rosparam command="load" file="$(find dwa_local_planner)/config/params.yaml"/>
+      <param name="sensor_offset_x" value="$(arg sensorOffsetX)"/>
+      <param name="sensor_offset_y" value="$(arg sensorOffsetY)"/>
+      <param name="two_way_drive" value="$(arg twoWayDrive)"/>
+      <param name="max_speed" value="$(arg maxSpeed)"/>
+    </node>
+    
+    <!-- TF 发布 (DWA 需要) -->
+    <node pkg="tf" type="static_transform_publisher" name="vehicleTransPublisher" 
+          args="-$(arg sensorOffsetX) -$(arg sensorOffsetY) 0 0 0 0 /sensor /vehicle 1000"/>
+    <node pkg="tf" type="static_transform_publisher" name="sensorTransPublisher" 
+          args="0 0 $(arg cameraOffsetZ) -1.5707963 0 -1.5707963 /sensor /camera 1000"/>
+  </group>
+  
+  <!-- MPC Local Planner -->
+  <group if="$(eval local_planner == 'mpc')">
+    <node pkg="mpc_local_planner" type="mpc_local_planner_node" name="mpc_local_planner" output="screen" required="true">
+      <rosparam command="load" file="$(find mpc_local_planner)/config/params.yaml"/>
+      <param name="sensor_offset_x" value="$(arg sensorOffsetX)"/>
+      <param name="sensor_offset_y" value="$(arg sensorOffsetY)"/>
+      <param name="two_way_drive" value="$(arg twoWayDrive)"/>
+      <param name="max_speed" value="$(arg maxSpeed)"/>
+    </node>
+    
+    <!-- TF 发布 (MPC 需要) -->
+    <node pkg="tf" type="static_transform_publisher" name="vehicleTransPublisher" 
+          args="-$(arg sensorOffsetX) -$(arg sensorOffsetY) 0 0 0 0 /sensor /vehicle 1000"/>
+    <node pkg="tf" type="static_transform_publisher" name="sensorTransPublisher" 
+          args="0 0 $(arg cameraOffsetZ) -1.5707963 0 -1.5707963 /sensor /camera 1000"/>
+  </group>
+  
+  
+  <!-- ============================================ -->
+  <!-- 可视化工具 -->
+  <!-- ============================================ -->
+  <include file="$(find visualization_tools)/launch/visualization_tools.launch"/>
+  
+  <!-- RViz -->
+  <node name="rviz" pkg="rviz" type="rviz" 
+        args="-d $(find navigation_start)/rviz/astar_global_plan.rviz" 
+        if="$(eval global_planner == 'astar')"/>
+  <node name="rviz" pkg="rviz" type="rviz" 
+        args="-d $(find navigation_start)/rviz/global_plan.rviz" 
+        if="$(eval global_planner == 'rrtstar')"/>
+  
+  
+  <!-- ============================================ -->
+  <!-- 自动发送目标点 -->
+  <!-- ============================================ -->
+  <node pkg="comparative_experiment" type="auto_goal_publisher.py" name="auto_goal_publisher" output="screen">
+    <param name="goalX" value="$(arg goalX)"/>
+    <param name="goalY" value="$(arg goalY)"/>
+    <param name="goalZ" value="0.0"/>
+    <param name="delay" value="5.0"/>
+    <param name="frame_id" value="map"/>
+  </node>
+  
+</launch>
+

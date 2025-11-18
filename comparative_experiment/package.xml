@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>comparative_experiment</name>
+  <version>1.0.0</version>
+  <description>
+    Comparative experiment package for evaluating local_planner, dwa_local_planner, 
+    and mpc_local_planner across different scenarios (substation, cylinder, maze).
+  </description>
+
+  <maintainer email="user@todo.todo">Autonomous Navigation Team</maintainer>
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <exec_depend>local_planner</exec_depend>
+  <exec_depend>dwa_local_planner</exec_depend>
+  <exec_depend>mpc_local_planner</exec_depend>
+  <exec_depend>global_path_planner</exec_depend>
+  <exec_depend>vehicle_simulator</exec_depend>
+  <exec_depend>terrain_analysis</exec_depend>
+  <exec_depend>terrain_analysis_ext</exec_depend>
+  <exec_depend>visualization_tools</exec_depend>
+
+  <export>
+  </export>
+</package>
+
+
+
+
+

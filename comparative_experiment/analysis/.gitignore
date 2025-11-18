@@ -1,0 +1,37 @@
+# 忽略数据文件
+bagfiles/*.bag
+bagfiles/*.bag.active
+
+# 忽略结果文件
+results/
+
+# Python 缓存
+__pycache__/
+*.pyc
+*.pyo
+
+# 临时文件
+*.tmp
+*.log
+.DS_Store
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

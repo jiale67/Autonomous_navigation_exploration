@@ -1,0 +1,54 @@
+<launch>
+    <!-- 基于密度的前沿探索（使用terrain_map_ext） -->
+    <node name="density_exploration" pkg="global_path_planner" type="density_exploration_node" output="screen">
+        
+        <!-- 扇区划分参数 -->
+        <param name="num_sectors" value="36" />                     <!-- 扇区数量 -->
+        <param name="min_sector_radius" value="2.0" />              <!-- 最小搜索半径 (m) -->
+        <param name="max_sector_radius" value="12.0" />             <!-- 最大搜索半径 (m) -->
+        <param name="sector_radial_resolution" value="1.0" />       <!-- 径向分辨率 (m) -->
+        
+        <!-- 密度计算参数 -->
+        <param name="density_radius" value="1.0" />                 <!-- 密度计算半径 (m) -->
+        <param name="dense_threshold" value="50" />                 <!-- 密集区域阈值（点数） -->
+        <param name="sparse_threshold" value="10" />                <!-- 稀疏区域阈值（点数） -->
+        
+        <!-- 目标选择参数 -->
+        <param name="goal_reached_threshold" value="1.2" />         <!-- 目标到达阈值 (m) -->
+        <param name="min_goal_distance" value="3.0" />              <!-- 最小目标距离 (m) -->
+        <param name="max_goal_distance" value="12.0" />             <!-- 最大目标距离 (m) -->
+        
+        <!-- 评分权重（总和应为1.0） -->
+        <param name="weight_sparsity" value="0.5" />                <!-- 稀疏性权重 -->
+        <param name="weight_distance" value="0.3" />                <!-- 距离权重 -->
+        <param name="weight_direction" value="0.2" />               <!-- 方向权重 -->
+        
+        <!-- 控制参数 -->
+        <param name="exploration_rate" value="1.0" />               <!-- 探索频率 (Hz) -->
+        <param name="enable_visualization" value="true" />          <!-- 启用可视化 -->
+        <param name="use_global_path" value="true" />               <!-- 使用全局路径规划 -->
+        <param name="goal_switch_distance" value="1.5" />           <!-- 目标切换距离阈值 (m) -->
+        <param name="goal_reevaluation_interval" value="5.0" />     <!-- 目标重新评估间隔 (秒) -->
+        <param name="path_replan_interval" value="3.0" />           <!-- 路径重规划间隔 (秒) -->
+        
+        <!-- RRT*路径规划参数 -->
+        <param name="rrt_step_size" value="0.5" />                  <!-- RRT步长 (m) -->
+        <param name="rrt_goal_bias" value="0.15" />                 <!-- 目标偏向概率 -->
+        <param name="rrt_max_iterations" value="2000" />            <!-- 最大迭代次数 -->
+        <param name="path_smoothing_factor" value="0.3" />          <!-- 路径平滑因子 -->
+        
+        <!-- 碰撞检测参数（新增：解决路径穿过障碍物问题） -->
+        <param name="collision_check_step" value="0.08" />           <!-- 碰撞检测步长 (m) - 更小=更精确 -->
+        <param name="robot_radius" value="0.4" />                   <!-- 机器人半径/安全边界 (m) -->
+        <param name="obstacle_height_threshold" value="0.2" />     <!-- 障碍物高度阈值 (m) -->
+        <param name="max_path_point_distance" value="0.4" />        <!-- 路径点最大间距 (m) - 解决点太稀疏问题 -->
+        
+        <!-- 已探索区域记录参数（新增：防止重复探索） -->
+        <param name="exploration_grid_resolution" value="2.0" />    <!-- 探索网格分辨率 (m) -->
+        <param name="exploration_radius" value="3.0" />             <!-- 探索半径 (m) - 机器人周围多大范围算已探索 -->
+        
+    </node>
+</launch>
+
+
+

@@ -1,0 +1,34 @@
+<launch>
+  	<arg name="world_name" default="maze"/>
+    <!-- A* Global Path Planner -->
+    <node pkg="global_path_planner" type="astar_interactive_node" name="astar_global_planner" output="screen">
+        <!-- Map parameters -->
+        <param name="map_resolution" type="double" value="0.2"/>
+        <param name="search_resolution" type="double" value="0.3"/>
+        
+        <!-- Planning parameters -->
+        <param name="heuristic_weight" type="double" value="1.0"/>
+        <param name="max_planning_time" type="double" value="5.0"/>
+        
+        <!-- 3D or 2D planning -->
+        <param name="use_3d_search" type="bool" value="false"/>
+        <param name="fixed_height" type="double" value="1.0"/>
+        
+        <!-- Collision checking -->
+        <rosparam param="collision_box">[1.0, 1.0, 0.6]</rosparam>
+        <rosparam param="env_box">[-100, 100, -100, 100, 0, 3.0]</rosparam>
+        
+        <!-- Visualization -->
+        <param name="visualize_search_space" type="bool" value="true"/>
+        
+        <!-- Waypoint extraction parameters for local_planner compatibility -->
+        <param name="turning_angle_threshold" type="double" value="15.0"/>
+        <param name="min_waypoint_distance" type="double" value="1.5"/>
+    </node>
+
+	<!-- map -->
+	<arg name="map_location" default="$(find global_path_planner)/octo_maps/$(arg world_name).bt"/>
+	<node pkg="octomap_server" type="octomap_server_node" name="octomap_server_node" args="$(arg map_location)" output="log" />
+    
+</launch>
+

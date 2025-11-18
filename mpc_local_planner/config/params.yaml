@@ -1,0 +1,50 @@
+# MPC Local Planner 参数配置
+
+# 机器人物理属性
+robot_radius: 0.3              # 机器人半径 (m)
+sensor_offset_x: 0.0           # 传感器 X 偏移 (m)
+sensor_offset_y: 0.0           # 传感器 Y 偏移 (m)
+
+# 运动学约束
+max_speed: 2.0                 # 最大线速度 (m/s)
+min_speed: -0.5                # 最小线速度 (m/s) - 支持倒车
+max_yaw_rate: 90.0             # 最大角速度 (度/秒)
+max_accel: 2.5                 # 最大线加速度 (m/s^2)
+max_yaw_accel: 120.0           # 最大角加速度 (度/秒^2)
+
+# MPC 配置
+prediction_horizon: 8          # 预测步数 - 减少以提高反应速度
+prediction_dt: 0.15            # 预测时间步长 (秒) - 缩短以更细粒度控制
+reference_speed: 1.5           # 参考速度 (m/s)
+
+# 传感器参数
+use_terrain_analysis: true     # 是否使用地形分析
+adjacent_range: 4.25           # 点云裁剪范围 (m)
+voxel_size: 0.05               # 体素滤波尺寸 (m)
+obstacle_height_thre: 0.15     # 障碍物高度阈值 (m)
+
+# 全局路径跟随
+path_lookahead_dist: 3.0       # 路径前视距离 (m)
+goal_update_distance: 1.0      # 目标推进距离阈值 (m)
+goal_tolerance: 0.3            # 到达目标的容忍距离 (m)
+path_interp_spacing: 0.1       # 路径插值间距 (m)
+
+# MPC 代价函数权重
+weight_x: 1.5                  # X位置误差权重 - 提高路径跟踪精度
+weight_y: 1.5                  # Y位置误差权重 - 提高路径跟踪精度
+weight_theta: 1.2              # 航向误差权重 - 大幅提高以快速调整朝向
+weight_v: 0.2                  # 速度跟踪权重 - 降低以允许灵活减速转弯
+weight_omega: 0.05             # 角速度控制权重 - 降低以鼓励更大转角
+weight_delta_v: 0.3            # 加速度变化权重 - 降低以允许快速加减速
+weight_delta_omega: 0.15       # 角加速度变化权重 - 降低以允许快速转向
+weight_obstacle: 1.0           # 障碍物距离权重 - 提高避障优先级
+
+# 安全参数
+stop_clearance: 0.3            # 触发避障策略距离 (m) - 提高以更早应对障碍
+safety_margin: 0.05            # 安全裕度 (m) - 降低以允许更灵活通过
+min_obstacle_distance: 0.25     # 最小安全距离 (m) - 降低以提高通过能力
+
+# 其他参数
+control_rate: 20.0             # 控制频率 (Hz)
+two_way_drive: true            # 是否支持前后双向驱动
+enable_obstacle_avoidance: true  # 是否启用障碍物规避
